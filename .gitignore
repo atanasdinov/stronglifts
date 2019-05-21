@@ -83,6 +83,5 @@ fabric.properties
 hs_err_pid*
 
 /.idea
-src/test/
 target/ScaleShop-1/META-INF/
 target/generated-sources/
