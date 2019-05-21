@@ -7,6 +7,7 @@ import com.scalefocus.sl.model.Exercise;
 import com.scalefocus.sl.model.User;
 import com.scalefocus.sl.model.Workout;
 import com.scalefocus.sl.model.WorkoutData;
+import com.scalefocus.sl.repository.ExerciseRepository;
 import com.scalefocus.sl.repository.UserRepository;
 import com.scalefocus.sl.repository.WorkoutDataRepository;
 import com.scalefocus.sl.repository.WorkoutRepository;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.scalefocus.sl.constant.DayName.DAY_A;
 import static com.scalefocus.sl.constant.DayName.DAY_B;
@@ -41,19 +39,18 @@ public class WorkoutService {
     private UserRepository userRepository;
     private WorkoutRepository workoutRepository;
     private WorkoutDataRepository workoutDataRepository;
+    private ExerciseRepository exerciseRepository;
 
-    private Exercise squat = new Exercise(ExerciseName.SQUAT.getValue());
-    private Exercise overheadPress = new Exercise(ExerciseName.OVERHEAD_PRESS.getValue());
-    private Exercise deadlift = new Exercise(ExerciseName.DEADLIFT.getValue());
-    private Exercise benchPress = new Exercise(ExerciseName.BENCH_PRESS.getValue());
-    private Exercise barbellRow = new Exercise(ExerciseName.BARBELL_ROW.getValue());
+    private Map<String, Exercise> exercises;
 
     @Autowired
     public WorkoutService(UserRepository userRepository, WorkoutRepository workoutRepository,
-                          WorkoutDataRepository workoutDataRepository) {
+                          WorkoutDataRepository workoutDataRepository, ExerciseRepository exerciseRepository) {
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
         this.workoutDataRepository = workoutDataRepository;
+        this.exerciseRepository = exerciseRepository;
+        this.exercises = ExerciseService.getExercises();
     }
 
     /**
@@ -67,7 +64,6 @@ public class WorkoutService {
                 .orElseThrow(() -> new UserNotFoundException("User not found by token."));
 
         Optional<Workout> lastWorkout = workoutRepository.getLastWorkout(user.getId());
-        Workout workout = new Workout();
 
         String dayName = Optional.of(lastWorkout)
                 .map(lastWorkoutData -> lastWorkoutData
@@ -76,13 +72,14 @@ public class WorkoutService {
                         .orElse(DAY_A))
                 .orElse(DAY_A);
 
-        workout.setDayName(dayName);
-
         List<WorkoutData> workoutData = Optional.of(dayName)
                 .filter(day -> day.equals(DAY_A))
                 .map(dayA -> getDayAData(user.getId()))
                 .orElse(getDayBData(user.getId()));
 
+        Workout workout = new Workout();
+
+        workout.setDayName(dayName);
         workout.setWorkoutData(workoutData);
 
         logger.info("Workout created.");
@@ -96,16 +93,17 @@ public class WorkoutService {
      * @return list of {@link WorkoutData}
      */
     private List<WorkoutData> getDayAData(Long userId) {
-        WorkoutData squatData = new WorkoutData(squat);
-        WorkoutData benchPressData = new WorkoutData(benchPress);
-        WorkoutData barbellRowData = new WorkoutData(barbellRow);
+        WorkoutData squatData = new WorkoutData(exercises.get(ExerciseName.SQUAT.toString()));
+        WorkoutData benchPressData = new WorkoutData(exercises.get(ExerciseName.BENCH_PRESS.toString()));
+        WorkoutData barbellRowData = new WorkoutData(exercises.get(ExerciseName.BARBELL_ROW.toString()));
 
         return workoutRepository.getPreviousWorkout(userId, DAY_A)
                 .map(previousWorkout -> {
 
-                    squatData.setWeight(WeightCalculator.calculate(ExerciseName.SQUAT.toString(), previousWorkout));
-                    benchPressData.setWeight(WeightCalculator.calculate(ExerciseName.BENCH_PRESS.toString(), previousWorkout));
-                    barbellRowData.setWeight(WeightCalculator.calculate(ExerciseName.BARBELL_ROW.toString(), previousWorkout));
+
+                    squatData.setWeight(WeightCalculator.calculate(ExerciseName.SQUAT.getValue(), previousWorkout));
+                    benchPressData.setWeight(WeightCalculator.calculate(ExerciseName.BENCH_PRESS.getValue(), previousWorkout));
+                    barbellRowData.setWeight(WeightCalculator.calculate(ExerciseName.BARBELL_ROW.getValue(), previousWorkout));
 
                     return Arrays.asList(squatData, benchPressData, barbellRowData);
                 })
@@ -126,15 +124,15 @@ public class WorkoutService {
      * @return list of {@link WorkoutData}
      */
     private List<WorkoutData> getDayBData(Long userId) {
-        WorkoutData squatData = new WorkoutData(squat);
-        WorkoutData overheadPressData = new WorkoutData(overheadPress);
-        WorkoutData deadliftData = new WorkoutData(deadlift);
+        WorkoutData squatData = new WorkoutData(exercises.get(ExerciseName.SQUAT.toString()));
+        WorkoutData overheadPressData = new WorkoutData(exercises.get(ExerciseName.OVERHEAD_PRESS.toString()));
+        WorkoutData deadliftData = new WorkoutData(exercises.get(ExerciseName.DEADLIFT.toString()));
 
         return workoutRepository.getPreviousWorkout(userId, DAY_B)
                 .map(previousWorkout -> {
-                    squatData.setWeight(WeightCalculator.calculate(ExerciseName.SQUAT.toString(), previousWorkout));
-                    overheadPressData.setWeight(WeightCalculator.calculate(ExerciseName.OVERHEAD_PRESS.toString(), previousWorkout));
-                    deadliftData.setWeight(WeightCalculator.calculate(ExerciseName.DEADLIFT.toString(), previousWorkout));
+                    squatData.setWeight(WeightCalculator.calculate(ExerciseName.SQUAT.getValue(), previousWorkout));
+                    overheadPressData.setWeight(WeightCalculator.calculate(ExerciseName.OVERHEAD_PRESS.getValue(), previousWorkout));
+                    deadliftData.setWeight(WeightCalculator.calculate(ExerciseName.DEADLIFT.getValue(), previousWorkout));
 
                     return Arrays.asList(squatData, overheadPressData, deadliftData);
                 })
@@ -160,7 +158,8 @@ public class WorkoutService {
                 .orElseThrow(() -> new UserNotFoundException("User not found by token."));
 
         workoutDataList.forEach(workoutData -> {
-            workoutData.getExercise().setName(ExerciseName.get(workoutData.getExercise().getName()).toString());
+            Exercise exercise = exerciseRepository.findByName(workoutData.getExercise().getName());
+            workoutData.setExercise(exercise);
 
             workoutDataRepository.save(workoutData);
         });

@@ -1,5 +1,6 @@
 package com.scalefocus.sl.service;
 
+import com.scalefocus.sl.enumeration.ExerciseName;
 import com.scalefocus.sl.model.Exercise;
 import com.scalefocus.sl.repository.ExerciseRepository;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -10,11 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.scalefocus.sl.enumeration.ExerciseName.*;
+import java.util.*;
 
 /**
  * <b>This service declares all manipulations that can be done on a {@link Exercise}.</b>
@@ -35,21 +32,37 @@ public class ExerciseService {
     /**
      * This method is used to add all {@link Exercise}'s to the database.
      */
+    private static final Map<String, Exercise> exercises;
+
+    static {
+        exercises = new HashMap<>();
+        exercises.put(ExerciseName.SQUAT.toString(), new Exercise(ExerciseName.SQUAT.getValue()));
+        exercises.put(ExerciseName.OVERHEAD_PRESS.toString(), new Exercise(ExerciseName.OVERHEAD_PRESS.getValue()));
+        exercises.put(ExerciseName.DEADLIFT.toString(), new Exercise(ExerciseName.DEADLIFT.getValue()));
+        exercises.put(ExerciseName.BENCH_PRESS.toString(), new Exercise(ExerciseName.BENCH_PRESS.getValue()));
+        exercises.put(ExerciseName.BARBELL_ROW.toString(), new Exercise(ExerciseName.BARBELL_ROW.getValue()));
+    }
+
+
+    public static Map<String, Exercise> getExercises() {
+        return exercises;
+    }
+
     @Bean
     public Void createDefaultExercises() {
 
         Optional.of(exerciseRepository.count())
                 .filter(count -> count.equals(NumberUtils.LONG_ZERO))
                 .ifPresent(count -> {
-                    List<Exercise> exercises = new ArrayList<>();
+                    List<Exercise> exerciseList = new ArrayList<>();
 
-                    exercises.add(new Exercise(SQUAT.toString()));
-                    exercises.add(new Exercise(DEADLIFT.toString()));
-                    exercises.add(new Exercise(BENCH_PRESS.toString()));
-                    exercises.add(new Exercise(OVERHEAD_PRESS.toString()));
-                    exercises.add(new Exercise(BARBELL_ROW.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.SQUAT.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.OVERHEAD_PRESS.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.DEADLIFT.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.BENCH_PRESS.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.BARBELL_ROW.toString()));
 
-                    exerciseRepository.saveAll(exercises);
+                    exerciseRepository.saveAll(exerciseList);
                     logger.info("Exercises created.");
                 });
 

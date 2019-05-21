@@ -21,22 +21,23 @@ public class WeightCalculator {
      * @return weight for a given {@link Exercise}
      */
     public static double calculate(String exerciseName, Workout previousWorkout) {
+
         WorkoutData workoutData = Optional.of(previousWorkout)
                 .map(Workout::getWorkoutData)
                 .flatMap(workoutDataList -> workoutDataList.stream()
                         .filter(workout -> {
-                            String exercise = Optional.of(workout)
+                            String exName = Optional.of(workout)
                                     .map(WorkoutData::getExercise)
                                     .map(Exercise::getName)
                                     .orElse(StringUtils.EMPTY);
 
-                            return exerciseName.equals(exercise);
+                            return exerciseName.equals(exName);
                         })
                         .findFirst())
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout data not found!"));
 
         return Optional.of(exerciseName)
-                .filter(exercise -> DEADLIFT.toString().equals(exercise) || SQUAT.toString().equals(exercise))
+                .filter(exName -> DEADLIFT.getValue().equals(exName) || SQUAT.getValue().equals(exName))
                 .map(exercise -> workoutData.getWeight() + 5)
                 .orElse(workoutData.getWeight() + 2.5);
 

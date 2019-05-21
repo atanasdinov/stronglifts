@@ -37,7 +37,7 @@ public class UserService {
      * @param userData contains the data from the register form
      */
     public ResponseEntity register(User userData) {
-        if (userData.getUsername().isEmpty() || userData.getPassword().isEmpty())
+        if (StringUtils.isEmpty(userData.getUsername()) || StringUtils.isEmpty(userData.getPassword()))
             throw new EmptyUserDataException("Empty username or password!");
 
         User user = new User(userData.getUsername(), passwordEncoder.encode(userData.getPassword()));
