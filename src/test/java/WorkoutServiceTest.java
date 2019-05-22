@@ -1,6 +1,6 @@
 
 import com.scalefocus.sl.constant.DayName;
-import com.scalefocus.sl.enumeration.ExerciseName;
+import com.scalefocus.sl.constant.ExerciseName;
 import com.scalefocus.sl.exception.UserNotFoundException;
 import com.scalefocus.sl.model.Exercise;
 import com.scalefocus.sl.model.User;
@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.scalefocus.sl.constant.DayName.DAY_A;
-import static com.scalefocus.sl.constant.DayName.DAY_B;
-import static com.scalefocus.sl.enumeration.ExerciseName.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -60,9 +57,9 @@ class WorkoutServiceTest {
 
         assertEquals(DayName.DAY_A, workout.getDayName());
 
-        assertEquals(ExerciseName.SQUAT.getValue(), workout.getWorkoutData().get(0).getExercise().getName());
-        assertEquals(ExerciseName.BENCH_PRESS.getValue(), workout.getWorkoutData().get(1).getExercise().getName());
-        assertEquals(ExerciseName.BARBELL_ROW.getValue(), workout.getWorkoutData().get(2).getExercise().getName());
+        assertEquals(ExerciseName.SQUAT, workout.getWorkoutData().get(0).getExercise().getName());
+        assertEquals(ExerciseName.BENCH_PRESS, workout.getWorkoutData().get(1).getExercise().getName());
+        assertEquals(ExerciseName.BARBELL_ROW, workout.getWorkoutData().get(2).getExercise().getName());
 
     }
 
@@ -72,10 +69,10 @@ class WorkoutServiceTest {
         user.setId(1L);
 
         List<WorkoutData> prevWorkoutData = new ArrayList<>();
-        prevWorkoutData.add(new WorkoutData(new Exercise(ExerciseName.get(SQUAT.getValue()).toString()), 20.0, null));
+        prevWorkoutData.add(new WorkoutData(new Exercise(ExerciseName.SQUAT), 20.0, null));
 
         Workout prevWorkout = new Workout();
-        prevWorkout.setDayName(DAY_A);
+        prevWorkout.setDayName(DayName.DAY_A);
         prevWorkout.setWorkoutData(prevWorkoutData);
 
         when(userRepository.findByToken("token")).thenReturn(Optional.of(user));
@@ -87,9 +84,9 @@ class WorkoutServiceTest {
 
         assertEquals(workout.getWorkoutData().get(0).getWeight() - 2.5, (double) prevWorkout.getWorkoutData().get(0).getWeight());
 
-        assertEquals(ExerciseName.SQUAT.getValue(), workout.getWorkoutData().get(0).getExercise().getName());
-        assertEquals(ExerciseName.OVERHEAD_PRESS.getValue(), workout.getWorkoutData().get(1).getExercise().getName());
-        assertEquals(ExerciseName.DEADLIFT.getValue(), workout.getWorkoutData().get(2).getExercise().getName());
+        assertEquals(ExerciseName.SQUAT, workout.getWorkoutData().get(0).getExercise().getName());
+        assertEquals(ExerciseName.OVERHEAD_PRESS, workout.getWorkoutData().get(1).getExercise().getName());
+        assertEquals(ExerciseName.DEADLIFT, workout.getWorkoutData().get(2).getExercise().getName());
     }
 
     @Test
@@ -98,7 +95,7 @@ class WorkoutServiceTest {
         user.setId(1L);
 
         Workout prevWorkout = new Workout();
-        prevWorkout.setDayName(DAY_B);
+        prevWorkout.setDayName(DayName.DAY_B);
 
         when(userRepository.findByToken("token")).thenReturn(Optional.of(user));
         when(workoutRepository.getLastWorkout(anyLong())).thenReturn(Optional.of(prevWorkout));
@@ -107,9 +104,9 @@ class WorkoutServiceTest {
 
         assertEquals(DayName.DAY_A, workout.getDayName());
 
-        assertEquals(ExerciseName.SQUAT.getValue(), workout.getWorkoutData().get(0).getExercise().getName());
-        assertEquals(ExerciseName.BENCH_PRESS.getValue(), workout.getWorkoutData().get(1).getExercise().getName());
-        assertEquals(ExerciseName.BARBELL_ROW.getValue(), workout.getWorkoutData().get(2).getExercise().getName());
+        assertEquals(ExerciseName.SQUAT, workout.getWorkoutData().get(0).getExercise().getName());
+        assertEquals(ExerciseName.BENCH_PRESS, workout.getWorkoutData().get(1).getExercise().getName());
+        assertEquals(ExerciseName.BARBELL_ROW, workout.getWorkoutData().get(2).getExercise().getName());
     }
 
     @Test

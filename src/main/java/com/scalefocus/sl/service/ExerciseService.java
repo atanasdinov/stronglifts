@@ -1,6 +1,6 @@
 package com.scalefocus.sl.service;
 
-import com.scalefocus.sl.enumeration.ExerciseName;
+import com.scalefocus.sl.constant.ExerciseName;
 import com.scalefocus.sl.model.Exercise;
 import com.scalefocus.sl.repository.ExerciseRepository;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -22,32 +22,31 @@ public class ExerciseService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExerciseService.class);
 
-    private ExerciseRepository exerciseRepository;
-
-    @Autowired
-    public ExerciseService(ExerciseRepository exerciseRepository) {
-        this.exerciseRepository = exerciseRepository;
-    }
-
-    /**
-     * This method is used to add all {@link Exercise}'s to the database.
-     */
     private static final Map<String, Exercise> exercises;
 
     static {
         exercises = new HashMap<>();
-        exercises.put(ExerciseName.SQUAT.toString(), new Exercise(ExerciseName.SQUAT.getValue()));
-        exercises.put(ExerciseName.OVERHEAD_PRESS.toString(), new Exercise(ExerciseName.OVERHEAD_PRESS.getValue()));
-        exercises.put(ExerciseName.DEADLIFT.toString(), new Exercise(ExerciseName.DEADLIFT.getValue()));
-        exercises.put(ExerciseName.BENCH_PRESS.toString(), new Exercise(ExerciseName.BENCH_PRESS.getValue()));
-        exercises.put(ExerciseName.BARBELL_ROW.toString(), new Exercise(ExerciseName.BARBELL_ROW.getValue()));
+        exercises.put(ExerciseName.SQUAT, new Exercise(ExerciseName.SQUAT));
+        exercises.put(ExerciseName.OVERHEAD_PRESS, new Exercise(ExerciseName.OVERHEAD_PRESS));
+        exercises.put(ExerciseName.DEADLIFT, new Exercise(ExerciseName.DEADLIFT));
+        exercises.put(ExerciseName.BENCH_PRESS, new Exercise(ExerciseName.BENCH_PRESS));
+        exercises.put(ExerciseName.BARBELL_ROW, new Exercise(ExerciseName.BARBELL_ROW));
     }
 
+    @Autowired
+    private ExerciseRepository exerciseRepository;
+
+    public ExerciseService(ExerciseRepository exerciseRepository) {
+        this.exerciseRepository = exerciseRepository;
+    }
 
     public static Map<String, Exercise> getExercises() {
         return exercises;
     }
 
+    /**
+     * This method is used to add all {@link Exercise}'s to the database.
+     */
     @Bean
     public Void createDefaultExercises() {
 
@@ -56,11 +55,11 @@ public class ExerciseService {
                 .ifPresent(count -> {
                     List<Exercise> exerciseList = new ArrayList<>();
 
-                    exerciseList.add(exercises.get(ExerciseName.SQUAT.toString()));
-                    exerciseList.add(exercises.get(ExerciseName.OVERHEAD_PRESS.toString()));
-                    exerciseList.add(exercises.get(ExerciseName.DEADLIFT.toString()));
-                    exerciseList.add(exercises.get(ExerciseName.BENCH_PRESS.toString()));
-                    exerciseList.add(exercises.get(ExerciseName.BARBELL_ROW.toString()));
+                    exerciseList.add(exercises.get(ExerciseName.SQUAT));
+                    exerciseList.add(exercises.get(ExerciseName.OVERHEAD_PRESS));
+                    exerciseList.add(exercises.get(ExerciseName.DEADLIFT));
+                    exerciseList.add(exercises.get(ExerciseName.BENCH_PRESS));
+                    exerciseList.add(exercises.get(ExerciseName.BARBELL_ROW));
 
                     exerciseRepository.saveAll(exerciseList);
                     logger.info("Exercises created.");

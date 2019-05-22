@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
-import static com.scalefocus.sl.enumeration.ExerciseName.DEADLIFT;
-import static com.scalefocus.sl.enumeration.ExerciseName.SQUAT;
+import static com.scalefocus.sl.constant.ExerciseName.DEADLIFT;
+import static com.scalefocus.sl.constant.ExerciseName.SQUAT;
 
 public class WeightCalculator {
 
@@ -37,7 +37,7 @@ public class WeightCalculator {
                 .orElseThrow(() -> new WorkoutNotFoundException("Workout data not found!"));
 
         return Optional.of(exerciseName)
-                .filter(exName -> DEADLIFT.getValue().equals(exName) || SQUAT.getValue().equals(exName))
+                .filter(exName -> DEADLIFT.equals(exName) || SQUAT.equals(exName))
                 .map(exercise -> workoutData.getWeight() + 5)
                 .orElse(workoutData.getWeight() + 2.5);
 
