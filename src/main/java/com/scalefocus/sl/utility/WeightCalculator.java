@@ -11,7 +11,7 @@ import java.util.Optional;
 import static com.scalefocus.sl.constant.ExerciseName.DEADLIFT;
 import static com.scalefocus.sl.constant.ExerciseName.SQUAT;
 
-public class WeightCalculator {
+public final class WeightCalculator {
 
     /**
      * This method contains the logic of weight calculation for different {@link Exercise}s.
@@ -40,6 +40,8 @@ public class WeightCalculator {
                 .filter(exName -> DEADLIFT.equals(exName) || SQUAT.equals(exName))
                 .map(exercise -> workoutData.getWeight() + 5)
                 .orElse(workoutData.getWeight() + 2.5);
+    }
 
+    private WeightCalculator() {
     }
 }
