@@ -1,21 +1,20 @@
-
-import com.scalefocus.sl.constant.DayName;
-import com.scalefocus.sl.constant.ExerciseName;
-import com.scalefocus.sl.exception.UserNotFoundException;
-import com.scalefocus.sl.model.Exercise;
-import com.scalefocus.sl.model.User;
-import com.scalefocus.sl.model.Workout;
-import com.scalefocus.sl.model.WorkoutData;
-import com.scalefocus.sl.repository.ExerciseRepository;
-import com.scalefocus.sl.repository.UserRepository;
-import com.scalefocus.sl.repository.WorkoutDataRepository;
-import com.scalefocus.sl.repository.WorkoutRepository;
-import com.scalefocus.sl.service.WorkoutService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sl.constant.DayName;
+import sl.constant.ExerciseName;
+import sl.exception.UserNotFoundException;
+import sl.model.Exercise;
+import sl.model.User;
+import sl.model.Workout;
+import sl.model.WorkoutData;
+import sl.repository.ExerciseRepository;
+import sl.repository.UserRepository;
+import sl.repository.WorkoutDataRepository;
+import sl.repository.WorkoutRepository;
+import sl.service.WorkoutService;
 
 import java.util.ArrayList;
 import java.util.List;
